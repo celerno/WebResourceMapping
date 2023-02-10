@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResourceMapping", "WebRe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResourceMappingAPI", "WebResourceMappingAPI\WebResourceMappingAPI.csproj", "{D200E843-7697-41A3-9039-22D9553A31EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResourceMappingTests", "WebResourceMappingTests\WebResourceMappingTests.csproj", "{A53183C9-F986-4659-AC72-59D57CDC5F5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResourceMappingInterfaces", "WebResourceMappingInterfaces\WebResourceMappingInterfaces.csproj", "{EB3DAF91-5B4D-426F-BB4C-7B396142ACEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{D200E843-7697-41A3-9039-22D9553A31EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D200E843-7697-41A3-9039-22D9553A31EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D200E843-7697-41A3-9039-22D9553A31EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A53183C9-F986-4659-AC72-59D57CDC5F5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A53183C9-F986-4659-AC72-59D57CDC5F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A53183C9-F986-4659-AC72-59D57CDC5F5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A53183C9-F986-4659-AC72-59D57CDC5F5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB3DAF91-5B4D-426F-BB4C-7B396142ACEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB3DAF91-5B4D-426F-BB4C-7B396142ACEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB3DAF91-5B4D-426F-BB4C-7B396142ACEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB3DAF91-5B4D-426F-BB4C-7B396142ACEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
