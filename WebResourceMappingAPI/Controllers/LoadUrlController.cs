@@ -14,6 +14,11 @@ namespace WebResourceMappingAPI.Controllers
             HttpClient = httpClient?? throw new ArgumentNullException(nameof(httpClient));
         }
 
+        /// <summary>
+        ///  Receives an Url and return the list of content for the site.
+        /// </summary>
+        /// <param name="url">Url to process and download</param>
+        /// <returns>A list of all images, a count of all words, and a count of each word within the content.</returns>
         [HttpGet]
         [Route("/")]
         public async Task<IActionResult> LoadUrl(string url) {
