@@ -16,16 +16,19 @@ namespace WebResourceMappingAPI.Models
         public int WordCountContent { get; set; }
         public IList<string> Images { get; set; }
 
+        public string ErrorMessages { get; set; }
+
         public WebsiteContentModel()
         {
             Images = Array.Empty<string>();
         }
+
     }
     public static class HttpContentExtensions
     {
         public static WebsiteContentModel ProcessContent(this HttpContent content)
         {
-            (IList<string> images, int contentWords, int allWords) stats =
+            (IList<string> images, int contentWords, int allWords, string ErrorMessage) stats =
                  ProcessHttpContent(content);
 
             return new WebsiteContentModel
@@ -36,9 +39,9 @@ namespace WebResourceMappingAPI.Models
             };
         }
 
-        private static (IList<string> images, int contentWords, int allWords) ProcessHttpContent(HttpContent content)
+        private static (IList<string> images, int contentWords, int allWords, string ErrorMessage) ProcessHttpContent(HttpContent content)
         {
-            (IList<string> images, int contentWords, int allWords) stats = (Array.Empty<string>(), 0, 0);
+            (IList<string> images, int contentWords, int allWords, string ErrorMessage) stats = (Array.Empty<string>(), 0, 0, string.Empty);
 
             using (TextReader textReader = new StreamReader(content.ReadAsStreamAsync().Result))
             {
@@ -53,6 +56,11 @@ namespace WebResourceMappingAPI.Models
                 }
                 catch(Exception ex) {
                     //throw new ArgumentException("Error while parsing the html.", ex);
+                    //better than throw an error, continue with the stats properly counted and add an error log.
+                    stats.ErrorMessage = $"Error while parsing the html." +
+                        $"{Environment.NewLine}HTML:" +
+                        $"{Environment.NewLine}{html}" +
+                        $"{Environment.NewLine}{ex.Message}";
                 }
             }
             return stats;
