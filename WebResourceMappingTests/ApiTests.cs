@@ -101,5 +101,30 @@ namespace WebResourceMappingTests
             Assert.Contains(model.Images, img=>img == "apic.png");
             
         }
+
+        const string THREE = "THREE";
+        const string FOUR = "Four";
+        const string SIX = "SIX";
+
+        const string REPEATEDTHREE = $"{THREE}<p>{THREE}</p><div><div><span>{THREE}</span></div></div>";
+        const string REPEATEDFOUR = $"{FOUR}<p>{FOUR}</p><div>{REPEATEDTHREE}<div><span>{FOUR}</span>{FOUR}</div></div>";
+        const string REPEATEDSIX = $"{SIX} {REPEATEDFOUR}<p>{SIX}</p><div>{SIX}<div><span>{SIX}</span>{SIX}</div>{SIX}</div>";
+
+        [Fact]
+        public async void LoadUrlCountRepeatedWords()
+        {
+            var httpClient = GetHttpClient(REPEATEDSIX);
+
+            this.Api = new LoadUrlController(httpClient);
+
+            string okUrl = "https://anyUrl.com";
+
+            var result = await Api.LoadUrl(okUrl);
+            var model = ((result as OkObjectResult)?.Value as WebsiteContentModel);
+            Assert.NotNull(model.AllWordCounters);
+            Assert.NotNull(model.ContentWordCounters);
+            Assert.Equal(3, model.AllWordCounters["THREE"]);
+            Assert.Equal(6, model.ContentWordCounters["SIX"]);
+        }
     }
 }
