@@ -14,7 +14,7 @@ namespace WebResourceMappingAPI.Models
     {
         public int WordCountAll { get; set; }
         public int WordCountContent { get; set; }
-        public IList<string> Images { get; set; }
+        public string[] Images { get; set; }
 
         public string ErrorMessages { get; set; }
 
@@ -28,20 +28,20 @@ namespace WebResourceMappingAPI.Models
     {
         public static WebsiteContentModel ProcessContent(this HttpContent content)
         {
-            (IList<string> images, int contentWords, int allWords, string ErrorMessage) stats =
+            (List<string> images, int contentWords, int allWords, string ErrorMessage) stats =
                  ProcessHttpContent(content);
 
             return new WebsiteContentModel
             {
-                Images = stats.images,
+                Images = stats.images.ToArray(),
                 WordCountAll = stats.allWords,
                 WordCountContent = stats.contentWords
             };
         }
 
-        private static (IList<string> images, int contentWords, int allWords, string ErrorMessage) ProcessHttpContent(HttpContent content)
+        private static (List<string> images, int contentWords, int allWords, string ErrorMessage) ProcessHttpContent(HttpContent content)
         {
-            (IList<string> images, int contentWords, int allWords, string ErrorMessage) stats = (Array.Empty<string>(), 0, 0, string.Empty);
+            (List<string> images, int contentWords, int allWords, string ErrorMessage) stats = (Array.Empty<string>().ToList(), 0, 0, string.Empty);
 
             using (TextReader textReader = new StreamReader(content.ReadAsStreamAsync().Result))
             {
@@ -65,17 +65,17 @@ namespace WebResourceMappingAPI.Models
             }
             return stats;
         }
-        static void ExtractAllImages(this HtmlNode node, ref IList<string> images)
+        static void ExtractAllImages(this HtmlNode node, ref List<string> images)
         {
             IEnumerable<HtmlNode> imageNodes = node.HasChildNodes ? node.
                     ChildNodes.
                     Where(x =>
-                        "img".Equals(node.OriginalName, StringComparison.OrdinalIgnoreCase))
+                        "img".Equals(x.OriginalName, StringComparison.OrdinalIgnoreCase))
                     : Array.Empty<HtmlNode>();
             IEnumerable<HtmlNode> otherNodes = node.HasChildNodes ? node.
                     ChildNodes.
                     Where(x =>
-                        "img".Equals(node.OriginalName, StringComparison.OrdinalIgnoreCase) 
+                        "img".Equals(x.OriginalName, StringComparison.OrdinalIgnoreCase) 
                         == false)
                     : Array.Empty<HtmlNode>();
 
