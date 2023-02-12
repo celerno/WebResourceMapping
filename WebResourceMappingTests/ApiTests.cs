@@ -76,5 +76,30 @@ namespace WebResourceMappingTests
             Assert.Equal(3, model.WordCountContent);
             Assert.Equal(9, model.WordCountAll);
         }
+
+        const string HTMLOPENING = "<html><body>";
+        const string HTMLCLOSING = "</body></html>";
+        const string IMGSRC = "<img src=\"apic.png\" />";
+        const string IMGPICTURETAG = "<picture><img src=\"apic.png\" /></picture>";
+        const string THREEIMGSINGLENODE = $"{HTMLOPENING}{IMGSRC}{IMGPICTURETAG}{IMGSRC}{HTMLCLOSING}";
+
+        [Fact]
+        public async void LoadUrlImagesCountTestExpectThree() {
+            var httpClient = GetHttpClient(THREEIMGSINGLENODE);
+
+            this.Api = new LoadUrlController(httpClient);
+
+            string okUrl = "https://anyUrl.com";
+
+            var result = await Api.LoadUrl(okUrl);
+
+            var model = ((result as OkObjectResult)?.Value as WebsiteContentModel);
+            
+            Assert.NotNull(model);
+            Assert.NotEmpty(model.Images);
+            Assert.Equal(3, model.Images.Length);
+            Assert.Contains(model.Images, img=>img == "apic.png");
+            
+        }
     }
 }
