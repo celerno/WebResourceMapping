@@ -15,12 +15,16 @@ namespace WebResourceMappingAPI.Models
         public int WordCountAll { get; set; }
         public int WordCountContent { get; set; }
         public string[] Images { get; set; }
-
+        public Dictionary<string, int> AllWordCounters { get; set; }
+        public Dictionary<string, int> ContentWordCounters { get; set; }
         public string ErrorMessages { get; set; }
 
         public WebsiteContentModel()
         {
             Images = Array.Empty<string>();
+            AllWordCounters = new Dictionary<string, int>();
+            ContentWordCounters = new Dictionary<string, int>();
+            ErrorMessages = string.Empty;
         }
 
     }
@@ -28,44 +32,48 @@ namespace WebResourceMappingAPI.Models
     {
         public static WebsiteContentModel ProcessContent(this HttpContent content)
         {
-            (List<string> images, int contentWords, int allWords, string ErrorMessage) stats =
+            WebsiteContentModel result =
                  ProcessHttpContent(content);
 
-            return new WebsiteContentModel
-            {
-                Images = stats.images.ToArray(),
-                WordCountAll = stats.allWords,
-                WordCountContent = stats.contentWords
-            };
+            return result;
         }
 
-        private static (List<string> images, int contentWords, int allWords, string ErrorMessage) ProcessHttpContent(HttpContent content)
+        private static WebsiteContentModel ProcessHttpContent(HttpContent content)
         {
-            (List<string> images, int contentWords, int allWords, string ErrorMessage) stats = (Array.Empty<string>().ToList(), 0, 0, string.Empty);
-
+            WebsiteContentModel model = new WebsiteContentModel();
             using (TextReader textReader = new StreamReader(content.ReadAsStreamAsync().Result))
             {
                 var d = new HtmlDocument();
                 string html = textReader.ReadToEnd();
-                stats.allWords = Regex.Matches(html, @"\b\w+\b").Count;
+                var allWordMatches = Regex.Matches(html, @"\b\w+\b");
+                model.WordCountAll = allWordMatches.Count;
+
+                foreach(var wordCountMatch in 
+                                allWordMatches
+                                .GroupBy(x=> x.Value)
+                                .Select(x => new { x.Key, Value = x.Count() }).OrderByDescending(x=>x.Value))
+                {
+                    model.AllWordCounters.Add(wordCountMatch.Key, wordCountMatch.Value);
+                }
+
                 try
                 {
                     d.LoadHtml(html);
-                    d.DocumentNode.CountWordsInAllContent(ref stats.contentWords);
-                    d.DocumentNode.ExtractAllImages(ref stats.images);
+                    d.DocumentNode.CountWordsInAllContent(ref model);
+                    d.DocumentNode.ExtractAllImages(ref model);
                 }
                 catch(Exception ex) {
                     //throw new ArgumentException("Error while parsing the html.", ex);
                     //better than throw an error, continue with the stats properly counted and add an error log.
-                    stats.ErrorMessage = $"Error while parsing the html." +
+                    model.ErrorMessages = $"Error while parsing the html." +
                         $"{Environment.NewLine}HTML:" +
                         $"{Environment.NewLine}{html}" +
                         $"{Environment.NewLine}{ex.Message}";
                 }
             }
-            return stats;
+            return model;
         }
-        static void ExtractAllImages(this HtmlNode node, ref List<string> images)
+        static void ExtractAllImages(this HtmlNode node, ref WebsiteContentModel model)
         {
             IEnumerable<HtmlNode> imageNodes = node.HasChildNodes ? node.
                     ChildNodes.
@@ -82,23 +90,40 @@ namespace WebResourceMappingAPI.Models
             foreach (var img in imageNodes)
             {
                 string src = img.Attributes["src"]?.Value ?? string.Empty;
-                images.Add(src);
+                model.Images = model.Images.Append(src).ToArray();
             }
             foreach (var inner in otherNodes)
             {
-                inner.ExtractAllImages(ref images);
+                inner.ExtractAllImages(ref model);
             }
         }
-        static void CountWordsInAllContent(this HtmlNode node, ref int wordCount)
+        static void CountWordsInAllContent(this HtmlNode node, ref WebsiteContentModel model)
         {
             foreach (var inner in node.ChildNodes)
             {
                 if (inner.HasChildNodes == false)
                 {
-                    wordCount += Regex.Matches(inner.InnerHtml, @"\b\w+\b", RegexOptions.Multiline).Count;
+                    var wordMatches = Regex.Matches(inner.InnerHtml, @"\b\w+\b", RegexOptions.Multiline);
+
+                    model.WordCountContent += wordMatches.Count;
+
+                    foreach (var wordCountMatch in
+                                    wordMatches
+                                    .GroupBy(x => x.Value)
+                                    .Select(x => new { x.Key, Value = x.Count() }).OrderByDescending(x => x.Value))
+                    {
+                        if (model.ContentWordCounters.ContainsKey(wordCountMatch.Key))
+                        {
+                            model.ContentWordCounters[wordCountMatch.Key] += wordCountMatch.Value;
+                        }
+                        else
+                        {
+                            model.ContentWordCounters.Add(wordCountMatch.Key, wordCountMatch.Value);
+                        }
+                    }
                 }
                 else
-                    inner.CountWordsInAllContent(ref wordCount);
+                    inner.CountWordsInAllContent(ref model);
             }
         }
     }
