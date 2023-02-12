@@ -47,11 +47,11 @@ namespace WebResourceMappingTests
 
             Assert.IsType<OkObjectResult>(result);
         }
-
+        const string THREEWNINEWT = "<html><body><p>Three Words Here</p></body></html>";
         [Fact]
         public async void LoadUrlTestExpectWebSiteContentModel()
         {
-            var httpClient = GetHttpClient("<html><body><p>Three Words Here</p></body></html>");
+            var httpClient = GetHttpClient(THREEWNINEWT);
 
             this.Api = new LoadUrlController(httpClient);
 
@@ -59,6 +59,22 @@ namespace WebResourceMappingTests
 
             var result = await Api.LoadUrl(okUrl);
             Assert.IsType<WebsiteContentModel>((result as OkObjectResult)?.Value);
+        }
+
+        [Fact] 
+        public async void LoadUrlTestExpect3WordsContent9WordsTotal()
+        {
+            var httpClient = GetHttpClient(THREEWNINEWT);
+
+            this.Api = new LoadUrlController(httpClient);
+
+            string okUrl = "https://anyUrl.com";
+
+            var result = await Api.LoadUrl(okUrl);
+            var model = ((result as OkObjectResult)?.Value as WebsiteContentModel);
+            Assert.NotNull(model);
+            Assert.Equal(3, model.WordCountContent);
+            Assert.Equal(9, model.WordCountAll);
         }
     }
 }
