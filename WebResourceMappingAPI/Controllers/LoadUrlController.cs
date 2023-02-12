@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using WebResourceMappingAPI.Models;
 using WebResourceMappingInterfaces;
 
 namespace WebResourceMappingAPI.Controllers
@@ -30,7 +31,8 @@ namespace WebResourceMappingAPI.Controllers
                 return BadRequest(result); 
             }
 
-            return Ok(result);
+            return Ok(result.Content.ProcessContent());
         }
+        
     }
 }
