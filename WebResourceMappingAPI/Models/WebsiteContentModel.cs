@@ -47,7 +47,7 @@ namespace WebResourceMappingAPI.Models
             {
                 var d = new HtmlDocument();
                 string html = textReader.ReadToEnd();
-                stats.allWords = Regex.Matches(html, @"\W\w+\W").Count;
+                stats.allWords = Regex.Matches(html, @"\b\w+\b").Count;
                 try
                 {
                     d.LoadHtml(html);
@@ -95,7 +95,7 @@ namespace WebResourceMappingAPI.Models
             {
                 if (inner.HasChildNodes == false)
                 {
-                    wordCount += Regex.Matches(inner.InnerHtml, @"\W\w+\W").Count;
+                    wordCount += Regex.Matches(inner.InnerHtml, @"\b\w+\b", RegexOptions.Multiline).Count;
                 }
                 else
                     inner.CountWordsInAllContent(ref wordCount);
