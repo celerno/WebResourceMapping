@@ -87,7 +87,7 @@ namespace WebResourceMappingAPI.Models
             {
                 if (inner.HasChildNodes == false)
                 {
-                    wordCount += Regex.Matches(inner.InnerHtml, @"\W\w+\W").Count;
+                    wordCount += Regex.Matches(inner.InnerHtml, @"\B\w+\B", RegexOptions.Multiline).Count;
                 }
                 else
                     inner.CountWordsInAllContent(ref wordCount);
