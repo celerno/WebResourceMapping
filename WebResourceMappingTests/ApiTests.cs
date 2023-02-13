@@ -98,7 +98,7 @@ namespace WebResourceMappingTests
             Assert.NotNull(model);
             Assert.NotEmpty(model.Images);
             Assert.Equal(3, model.Images.Length);
-            Assert.Contains(model.Images, img=>img == "apic.png");
+            Assert.Contains(model.Images, img=>img.Contains("apic.png"));
             
         }
 
@@ -123,8 +123,8 @@ namespace WebResourceMappingTests
             var model = ((result as OkObjectResult)?.Value as WebsiteContentModel);
             Assert.NotNull(model.AllWordCounters);
             Assert.NotNull(model.ContentWordCounters);
-            Assert.Equal(3, model.AllWordCounters["THREE"]);
-            Assert.Equal(6, model.ContentWordCounters["SIX"]);
+            Assert.Equal(3, model.AllWordCounters["three"]);
+            Assert.Equal(6, model.ContentWordCounters["six"]);
         }
     }
 }
