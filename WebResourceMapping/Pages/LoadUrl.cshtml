@@ -2,6 +2,7 @@
 @model WebResourceMapping.Pages.LoadUrlModel
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <style>
     .carousel-inner > .item > img,
@@ -48,14 +49,13 @@ Once a response is received, the site should display the following things:
   <ol class="carousel-indicators">
         @for(int i =0; i< Model.Content.Images.Length;i++)
         {
-
-            <li data-target="#myCarousel" data-slide-to="@i" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="@i" class="item@(i+1 + (i==0?" active":""))"></li>
         }
   </ol>
    <div class="carousel-inner" role="listbox">
-        @for(int i =0; i< Model.Content.Images.Length; i++)
+        @for(int i=0; i< Model.Content.Images.Length; i++)
         {
-            <div class="item @(i==0?"active":"")">
+            <div class="item @((i==0?" active":""))">
                 <img src="@Model.Content.Images[i]" />
             </div>
         }
@@ -79,6 +79,21 @@ Once a response is received, the site should display the following things:
     <pre>@Model.Content.ErrorMessages</pre>
 </footer>
 <script>
+
+    /**
+     * Carrousel
+     */
+    
+    // Enable Carousel Controls
+    document.querySelector('.left').addEventListener(function(){
+        $('#myCarousel').carousel("prev");
+    });
+    document.querySelector('.left').addEventListener(function(){
+        $('#myCarousel').carousel("next");
+    });
+    /***
+     * CHART
+     */
     const DATA_COUNT = 10;
     const CHART_COLORS=
     {red:'red', 
