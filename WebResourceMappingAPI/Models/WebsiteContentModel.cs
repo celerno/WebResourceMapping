@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
@@ -30,6 +31,8 @@ namespace WebResourceMappingAPI.Models
     }
     public static class HttpContentExtensions
     {
+        private static Regex WORDREGEX = new Regex(@"\b[a-z]+\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
         public static WebsiteContentModel ProcessContent(this HttpContent content)
         {
             WebsiteContentModel result =
@@ -45,12 +48,12 @@ namespace WebResourceMappingAPI.Models
             {
                 var d = new HtmlDocument();
                 string html = textReader.ReadToEnd();
-                var allWordMatches = Regex.Matches(html, @"\b\w+\b");
+                var allWordMatches = WORDREGEX.Matches(html);
                 model.WordCountAll = allWordMatches.Count;
 
                 foreach(var wordCountMatch in 
                                 allWordMatches
-                                .GroupBy(x=> x.Value)
+                                .GroupBy(x=> x.Value.ToLowerInvariant())
                                 .Select(x => new { x.Key, Value = x.Count() }).OrderByDescending(x=>x.Value))
                 {
                     model.AllWordCounters.Add(wordCountMatch.Key, wordCountMatch.Value);
@@ -71,8 +74,13 @@ namespace WebResourceMappingAPI.Models
                         $"{Environment.NewLine}{ex.Message}";
                 }
             }
+            model.ContentWordCounters = model.ContentWordCounters.Top(10);
+            model.AllWordCounters = model.AllWordCounters.Top(10);
             return model;
         }
+        static Dictionary<string, int> Top(this Dictionary<string, int> dict, int top) => 
+            dict.OrderByDescending(x => x.Value).Take(top)
+                .ToDictionary(x => x.Key, x => x.Value);
         static void ExtractAllImages(this HtmlNode node, ref WebsiteContentModel model)
         {
             IEnumerable<HtmlNode> imageNodes = node.HasChildNodes ? node.
@@ -97,20 +105,21 @@ namespace WebResourceMappingAPI.Models
                 inner.ExtractAllImages(ref model);
             }
         }
-        static void CountWordsInAllContent(this HtmlNode node, ref WebsiteContentModel model)
+        static void CountWordsInAllContent(this HtmlNode node, ref WebsiteContentModel model, int take = 0)
         {
             foreach (var inner in node.ChildNodes)
             {
                 if (inner.HasChildNodes == false)
                 {
-                    var wordMatches = Regex.Matches(inner.InnerHtml, @"\b\w+\b", RegexOptions.Multiline);
+                    var wordMatches = WORDREGEX.Matches(inner.InnerHtml);
 
                     model.WordCountContent += wordMatches.Count;
 
                     foreach (var wordCountMatch in
                                     wordMatches
-                                    .GroupBy(x => x.Value)
-                                    .Select(x => new { x.Key, Value = x.Count() }).OrderByDescending(x => x.Value))
+                                    .GroupBy(x => x.Value.ToLowerInvariant())
+                                    .OrderByDescending(x=>x.Count())
+                                    .Select(x => new { x.Key, Value = x.Count() }))
                     {
                         if (model.ContentWordCounters.ContainsKey(wordCountMatch.Key))
                         {

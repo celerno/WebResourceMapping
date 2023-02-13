@@ -21,7 +21,7 @@ namespace WebResourceMappingAPI.Controllers
         /// <param name="url">Url to process and download</param>
         /// <returns>A list of all images, a count of all words, and a count of each word within the content.</returns>
         [HttpGet]
-        [Route("/")]
+        [Route("/LoadUrl")]
         public async Task<IActionResult> LoadUrl(string url) {
 
             var result = await HttpClient.GetAsync(url);
