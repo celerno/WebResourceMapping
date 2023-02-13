@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Net;
 using WebResourceMappingAPI.Helpers;
 using WebResourceMappingAPI.Models;
@@ -24,19 +25,30 @@ namespace WebResourceMappingAPI.Controllers
         [HttpGet]
         [Route("/LoadUrl")]
         public async Task<IActionResult> LoadUrl(string url) {
-
             var uri = new Uri(url);
-
-            var result = await HttpClient.GetAsync(uri.AbsoluteUri);
-
-            if (result.StatusCode != HttpStatusCode.OK)
-            {
-                return BadRequest(result); 
-            }
-            
             WebsiteContentModel model = new WebsiteContentModel(uri.GetLeftPart(UriPartial.Authority));
+            try
+            {
+                var result = await HttpClient.GetAsync(uri.AbsoluteUri);
+                
+                if (result.StatusCode != HttpStatusCode.OK)
+                {
+                    model.ErrorMessages = result.Content.ReadAsStringAsync().Result;
+                    return BadRequest(model);
+                }
 
-            return Ok(result.Content.ProcessContent(model));
+                
+
+                return Ok(result.Content.ProcessContent(model));
+            }
+            catch (Exception ex) {
+                model.ErrorMessages = ex.Message;
+                return BadRequest(model);
+            }
+            finally
+            {
+                HttpClient.CancelPendingRequests();
+            }
         }
         
     }

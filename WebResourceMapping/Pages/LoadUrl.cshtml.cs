@@ -25,13 +25,21 @@ namespace WebResourceMapping.Pages
             }
             using(var client = new HttpClient())
             {
-
-                var apiCallUrl = new Uri($"{_api}?url={url}");
-                
-                client.BaseAddress = apiCallUrl;
-                var result = client.GetAsync(apiCallUrl).Result;
-                var json = result.Content.ReadAsStringAsync().Result;
-                Content = JsonConvert.DeserializeObject<WebsiteContentModel>(json);
+                try
+                {
+                    var apiCallUrl = new Uri($"{_api}?url={url}");
+                    var result = client.GetAsync(apiCallUrl).Result;
+                    var json = result.Content.ReadAsStringAsync().Result;
+                    Content = JsonConvert.DeserializeObject<WebsiteContentModel>(json);
+                }
+                catch (Exception ex)
+                {
+                    Content = new WebsiteContentModel(url) { ErrorMessages = ex.Message };
+                }
+                finally
+                {
+                    client.CancelPendingRequests();
+                }
             }
         }
     }
