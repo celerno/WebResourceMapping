@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using WebResourceMappingAPI.Helpers;
 using WebResourceMappingAPI.Models;
 using WebResourceMappingInterfaces;
 
@@ -24,14 +25,18 @@ namespace WebResourceMappingAPI.Controllers
         [Route("/LoadUrl")]
         public async Task<IActionResult> LoadUrl(string url) {
 
-            var result = await HttpClient.GetAsync(url);
+            var uri = new Uri(url);
+
+            var result = await HttpClient.GetAsync(uri.AbsoluteUri);
 
             if (result.StatusCode != HttpStatusCode.OK)
             {
                 return BadRequest(result); 
             }
+            
+            WebsiteContentModel model = new WebsiteContentModel(uri.GetLeftPart(UriPartial.Authority));
 
-            return Ok(result.Content.ProcessContent());
+            return Ok(result.Content.ProcessContent(model));
         }
         
     }

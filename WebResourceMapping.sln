@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResourceMapping", "WebResourceMapping\WebResourceMapping.csproj", "{2F93859A-5989-43A7-96B6-3F494CFE6515}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebResourceMapping", "WebResourceMapping\WebResourceMapping.csproj", "{2F93859A-5989-43A7-96B6-3F494CFE6515}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResourceMappingAPI", "WebResourceMappingAPI\WebResourceMappingAPI.csproj", "{D200E843-7697-41A3-9039-22D9553A31EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebResourceMappingAPI", "WebResourceMappingAPI\WebResourceMappingAPI.csproj", "{D200E843-7697-41A3-9039-22D9553A31EF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResourceMappingTests", "WebResourceMappingTests\WebResourceMappingTests.csproj", "{A53183C9-F986-4659-AC72-59D57CDC5F5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebResourceMappingTests", "WebResourceMappingTests\WebResourceMappingTests.csproj", "{A53183C9-F986-4659-AC72-59D57CDC5F5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebResourceMappingInterfaces", "WebResourceMappingInterfaces\WebResourceMappingInterfaces.csproj", "{EB3DAF91-5B4D-426F-BB4C-7B396142ACEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebResourceMappingInterfaces", "WebResourceMappingInterfaces\WebResourceMappingInterfaces.csproj", "{EB3DAF91-5B4D-426F-BB4C-7B396142ACEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

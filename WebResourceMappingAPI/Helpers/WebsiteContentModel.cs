@@ -5,45 +5,28 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
+using WebResourceMappingAPI.Models;
 
-namespace WebResourceMappingAPI.Models
+namespace WebResourceMappingAPI.Helpers
 {
     /// <summary>
     /// A list of all images, a count of all words, and a count of each word within the content.
     /// </summary>
-    public class WebsiteContentModel
-    {
-        public int WordCountAll { get; set; }
-        public int WordCountContent { get; set; }
-        public string[] Images { get; set; }
-        public Dictionary<string, int> AllWordCounters { get; set; }
-        public Dictionary<string, int> ContentWordCounters { get; set; }
-        public string ErrorMessages { get; set; }
-
-        public WebsiteContentModel()
-        {
-            Images = Array.Empty<string>();
-            AllWordCounters = new Dictionary<string, int>();
-            ContentWordCounters = new Dictionary<string, int>();
-            ErrorMessages = string.Empty;
-        }
-
-    }
-    public static class HttpContentExtensions
+   
+    public static class WebSiteContentExtensions
     {
         private static Regex WORDREGEX = new Regex(@"\b[a-z]+\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-        public static WebsiteContentModel ProcessContent(this HttpContent content)
+        public static WebsiteContentModel ProcessContent(this HttpContent content, WebsiteContentModel model)
         {
             WebsiteContentModel result =
-                 ProcessHttpContent(content);
+                 ProcessHttpContent(content, model);
 
             return result;
         }
 
-        private static WebsiteContentModel ProcessHttpContent(HttpContent content)
+        private static WebsiteContentModel ProcessHttpContent(HttpContent content, WebsiteContentModel model)
         {
-            WebsiteContentModel model = new WebsiteContentModel();
             using (TextReader textReader = new StreamReader(content.ReadAsStreamAsync().Result))
             {
                 var d = new HtmlDocument();
@@ -98,6 +81,7 @@ namespace WebResourceMappingAPI.Models
             foreach (var img in imageNodes)
             {
                 string src = img.Attributes["src"]?.Value ?? string.Empty;
+                src = src.StartsWith("http") ? src : $"{model.TargetSite}{src}";
                 model.Images = model.Images.Append(src).ToArray();
             }
             foreach (var inner in otherNodes)

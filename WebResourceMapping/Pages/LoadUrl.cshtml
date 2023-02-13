@@ -1,0 +1,119 @@
+﻿@page
+@model WebResourceMapping.Pages.LoadUrlModel
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<style>
+    .carousel-inner > .item > img,
+    .carousel-inner > .item > a > img {
+        width: 70%;
+        margin: auto;
+    }
+    .chart{
+        display:flex;
+    }
+    .chart > div:last-of-type{
+        margin-left:1vw;
+    }
+</style>
+<div class="chart">
+    <div>
+        <h3>
+            Exercise:Create an API that contains a single endpoint
+            </h3>
+            <pre>
+LoadUrl(string url) – when called, the api should download the content of the url. 
+It should return a list of all images, a count of all words, and a count of each word within the content.
+Create a website that allows the user to input a url (could be an api or a web page url). 
+When submitted, the site should call the previously created API. 
+Once a response is received, the site should display the following things:
+- A carousel of images
+- A total word count
+- A graph of the top 10 words and their counts
+            </pre>
+
+    </div>
+    <div>
+        <h3>Total word count: @Model.Content.WordCountAll</h3>
+        <h3>
+            Top 10 repeated words in content.
+        </h3>
+    <canvas id="myChart">
+    </canvas>
+    </div>
+</div>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+        @for(int i =0; i< Model.Content.Images.Length;i++)
+        {
+
+            <li data-target="#myCarousel" data-slide-to="@i" class="active"></li>
+        }
+  </ol>
+   <div class="carousel-inner" role="listbox">
+        @for(int i =0; i< Model.Content.Images.Length; i++)
+        {
+            <div class="item @(i==0?"active":"")">
+                <img src="@Model.Content.Images[i]" />
+            </div>
+        }
+  </div>
+
+  <!-- Left and right controls -->
+  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+<script>
+    const DATA_COUNT = 10;
+    const CHART_COLORS=
+    {red:'red', 
+    grey:'grey', blue:'blue', yellow:'yellow', 
+    green:'green',
+    pink:'pink',
+    magenta:'magenta',
+    cyan:'cyan',
+    purlple:'purple',
+    brown:'brown'}
+
+    const NUMBER_CFG = { count: DATA_COUNT, min: 0, max: 100 };
+    var words = @(
+        Json.Serialize(Model.Content.ContentWordCounters));
+
+
+    const config = {
+  type: 'doughnut',
+  data: {
+        labels: Object.keys(words),
+        datasets: [
+            {
+                label: 'word',
+                data: Object.values(words),
+                    backgroundColor: Object.values(CHART_COLORS)
+            }
+        ]
+    },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Top 10 repeated words'
+      }
+    }
+  },
+};
+var chart = new Chart(document.getElementById('myChart'), config);
+
+
+</script>
