@@ -83,14 +83,15 @@ Once a response is received, the site should display the following things:
     /**
      * Carrousel
      */
-    
+    try{
     // Enable Carousel Controls
     document.querySelector('.left').addEventListener(function(){
         $('#myCarousel').carousel("prev");
     });
-    document.querySelector('.left').addEventListener(function(){
+    document.querySelector('.right').addEventListener(function(){
         $('#myCarousel').carousel("next");
     });
+    }catch(e){}
     /***
      * CHART
      */
