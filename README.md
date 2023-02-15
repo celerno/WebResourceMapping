@@ -19,6 +19,7 @@ Otherwise, after cloning this repo, go to each project's folder and perform dotn
 ```
 WebResourceMapping/dotnet run
 WebResourceMappingAPI/dotnet run
+```
 
 ## Screenshots 
 ![image](https://user-images.githubusercontent.com/2898916/218931826-fd0c5b8f-1add-4b69-be53-c261a8c0b9c1.png)
